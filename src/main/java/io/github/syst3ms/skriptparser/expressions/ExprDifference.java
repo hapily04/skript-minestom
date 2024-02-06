@@ -5,20 +5,12 @@ import io.github.syst3ms.skriptparser.expressions.arithmetic.Arithmetics;
 import io.github.syst3ms.skriptparser.expressions.arithmetic.DifferenceInfo;
 import io.github.syst3ms.skriptparser.expressions.arithmetic.ExprArithmetic;
 import io.github.syst3ms.skriptparser.lang.Expression;
-import io.github.syst3ms.skriptparser.lang.Literal;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
-import io.github.syst3ms.skriptparser.lang.Variable;
 import io.github.syst3ms.skriptparser.log.ErrorType;
 import io.github.syst3ms.skriptparser.parsing.ParseContext;
-import io.github.syst3ms.skriptparser.types.Type;
 import io.github.syst3ms.skriptparser.types.TypeManager;
-import io.github.syst3ms.skriptparser.types.changers.Arithmetic;
-import io.github.syst3ms.skriptparser.util.ClassUtils;
-import io.github.syst3ms.skriptparser.util.DoubleOptional;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.Optional;
 
 /**
  * The difference between two values.

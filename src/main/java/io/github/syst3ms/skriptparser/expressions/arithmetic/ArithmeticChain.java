@@ -119,7 +119,6 @@ public class ArithmeticChain<L, R, T> implements ArithmeticGettable<T> {
 
 	@SuppressWarnings("unchecked")
 	public static <L, R, T> ArithmeticGettable<T> parse(List<Object> chain) {
-		System.out.println(chain);
 		for (Predicate<Object> checker : CHECKERS) {
 			int lastIndex = findLastIndex(chain, checker);
 

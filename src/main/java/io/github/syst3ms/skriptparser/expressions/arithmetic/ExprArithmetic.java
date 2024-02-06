@@ -38,7 +38,7 @@ public class ExprArithmetic<L, R, T> implements Expression<T> {
 
 	private static final Class<?>[] INTEGER_CLASSES = {Long.class, Integer.class, Short.class, Byte.class};
 
-	private static class PatternInfo {
+	public static class PatternInfo {
 		public final Operator operator;
 		public final boolean leftGrouped;
 		public final boolean rightGrouped;
