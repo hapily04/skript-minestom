@@ -15,6 +15,7 @@ import io.github.syst3ms.skriptparser.util.Time;
 import io.github.syst3ms.skriptparser.util.color.Color;
 import io.github.syst3ms.skriptparser.util.math.BigDecimalMath;
 
+import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -122,6 +123,17 @@ public class DefaultRegistration {
                 .literalParser(s -> Time.parse(s).orElse(null))
                 .toStringFunction(Time::toString)
                 .register();
+
+        /*
+         * Enum Types
+         */
+        /* example:
+        registration.newEnumType(RetentionPolicy.class, "retentionpolicy", "retentionpolic@y@ies")
+                .toStringFunction(RetentionPolicy::toString)
+                .enumName(RetentionPolicy.RUNTIME, "runtime", "run time")
+                .enumName(RetentionPolicy.SOURCE, "source", "src")
+                .enumName(RetentionPolicy.CLASS, "class", "clazz")
+                .register();*/
 
         /*
          * Comparators

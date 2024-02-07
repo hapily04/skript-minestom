@@ -41,15 +41,7 @@ import io.github.syst3ms.skriptparser.util.CollectionUtils;
 import io.github.syst3ms.skriptparser.util.MultiMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -516,21 +508,15 @@ public class SkriptRegistration {
     }
 
     /**
-     * Starts a registration process for a {@link Type}, automatically
+     * Starts a registration process for an enum {@link Type}, automatically
      * @param c the class the Type represents
      * @param pattern the Type's pattern
      * @param <T> the represented class
      * @return an {@link TypeRegistrar}
      */
-    /*public <T extends Enum<T>> TypeRegistrar<T> newEnumType(Class<T> c, String name, String pattern) {
-        TypeRegistrar<T> typeRegistrar = new TypeRegistrar<>(c, name, pattern);
-        typeRegistrar.literalParser(s -> {
-            for (T enumConstant : c.getEnumConstants()) {
-                
-            }
-        });
-        return typeRegistrar;
-    }*/
+    public <T extends Enum<T>> EnumTypeRegistrar<T> newEnumType(Class<T> c, String name, String pattern) {
+        return new EnumTypeRegistrar<>(c, name, pattern);
+    }
 
     /**
      * Registers a {@link Type}
@@ -673,6 +659,67 @@ public class SkriptRegistration {
             newTypes = true;
             types.add(new Type<>(c, baseName, pattern, literalParser, toStringFunction, defaultChanger));
         }
+    }
+
+    public class EnumTypeRegistrar<C extends Enum<C>> implements Registrar {
+
+        private final Class<C> c;
+        private final String baseName;
+        private final String pattern;
+        private final Map<List<String>, C> nameMap = new HashMap<>();
+        private Function<? super C, String> toStringFunction = o -> Objects.toString(o, TypeManager.NULL_REPRESENTATION);
+        private final Function<String, ? extends C> literalParser = s -> {
+            for (List<String> names : nameMap.keySet()) {
+                if (names.contains(s.toLowerCase(Locale.ENGLISH))) return nameMap.get(names);
+            }
+            return null;
+        };
+        @Nullable
+        private Changer<? super C> defaultChanger;
+        public EnumTypeRegistrar(Class<C> c, String baseName, String pattern) {
+            this.c = c;
+            this.baseName = baseName;
+            this.pattern = pattern;
+        }
+
+        public EnumTypeRegistrar<C> enumName(C value, String... names) {
+            if (names.length == 0) throw new IllegalArgumentException("No names were found for the value '" + value.name()
+                                                                              + "' while attempting to register an enum " +
+                                                                              "name for '" + value.getDeclaringClass().getName() + ".class'");
+            for (int i = 0; i < names.length; i++) {
+                names[i] = names[i].toLowerCase(Locale.ENGLISH);
+            }
+            nameMap.put(Arrays.asList(names), value);
+            return this;
+        }
+
+        /**
+         * @param toStringFunction a function converting an instance of the type to a String
+         * @return the registrar
+         */
+        public EnumTypeRegistrar<C> toStringFunction(Function<? super C, String> toStringFunction) {
+            this.toStringFunction = c -> c == null ? TypeManager.NULL_REPRESENTATION : toStringFunction.apply(c);
+            return this;
+        }
+
+        /**
+         * @param defaultChanger a default {@link Changer} for this type
+         * @return the registrar
+         */
+        public EnumTypeRegistrar<C> defaultChanger(Changer<? super C> defaultChanger) {
+            this.defaultChanger = defaultChanger;
+            return this;
+        }
+
+        /**
+         * Adds this type to the list of currently registered syntaxes
+         */
+        @Override
+        public void register() {
+            newTypes = true;
+            types.add(new Type<>(c, baseName, pattern, literalParser, toStringFunction, defaultChanger));
+        }
+
     }
 
     public abstract class SyntaxRegistrar<C extends SyntaxElement> implements Registrar {
